@@ -1,9 +1,9 @@
 // Firebase configuration
 export const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "your-api-key",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "your-project.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "your-project-id",
+  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "your-project"}.appspot.com`,
   messagingSenderId: "123456789",
   appId: "your-app-id"
 };

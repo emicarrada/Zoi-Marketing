@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import express from 'express';
 import Stripe from 'stripe';
 import { authenticateToken } from '../middleware/auth';
 import { createSubscription, handleWebhook, cancelSubscription } from '../controllers/stripeController';
