@@ -11,6 +11,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# Ignorar archivos de entorno en cualquier subcarpeta
+**/.env*
+
 # Archivos de construcción
 dist/
 build/
@@ -40,3 +43,14 @@ Thumbs.db
 # Archivos de Prisma
 prisma/migrations/
 !prisma/migrations/.gitkeep
+backend/zoi-marketing-firebase-adminsdk-fbsvc-ac64be31a7.json
+
+# Archivos de claves y configuraciones sensibles
+**/*firebase*.*
+**/*serviceAccount*.*
+**/*key*.*
+**/*secret*.*
+**/*credentials*.*
+**/*config*.json
+**/google-services.json
+**/aws-exports.js
