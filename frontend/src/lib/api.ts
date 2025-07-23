@@ -59,13 +59,13 @@ export const contentAPI = {
 export const siteAPI = {
   create: (data: { title: string; template?: string; content?: any }): Promise<ApiResponse<{ site: Site }>> =>
     api.post('/site/create', data),
-  
-  getAll: (): Promise<ApiResponse<{ sites: Site[] }>> =>
-    api.get('/site'),
-  
+
+  getAll: (params?: { page?: number; pageSize?: number }): Promise<ApiResponse<{ sites: Site[]; pagination?: { page: number; pageSize: number; total: number; totalPages: number } }>> =>
+    api.get('/site', { params }),
+
   update: (id: string, data: { title?: string; content?: any }): Promise<ApiResponse<{ site: Site }>> =>
     api.put(`/site/${id}`, data),
-  
+
   publish: (id: string): Promise<ApiResponse<{ site: Site; publicUrl: string }>> =>
     api.post(`/site/${id}/publish`),
 };
