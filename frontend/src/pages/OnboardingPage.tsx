@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
+// import { useAuth } from '../hooks/useAuth';
 import { userAPI } from '../lib/api';
 import toast from 'react-hot-toast';
 import type { OnboardingData } from '../types';
@@ -19,7 +19,7 @@ const OnboardingPage = () => {
     goals: []
   });
 
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const navigate = useNavigate();
 
   const businessTypes = [

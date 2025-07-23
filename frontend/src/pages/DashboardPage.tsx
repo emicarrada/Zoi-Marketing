@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { BarChart3, Users, Globe, Sparkles } from 'lucide-react';
 import { dashboardAPI, contentAPI } from '../lib/api';
-import { useAuth } from '../hooks/useAuth';
+// import { useAuth } from '../hooks/useAuth';
 import type { DashboardData } from '../types';
 
 const DashboardPage = () => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   useEffect(() => {
     loadDashboardData();
@@ -47,7 +47,14 @@ const DashboardPage = () => {
     );
   }
 
-  const metrics = data?.metrics || {};
+  const metrics = data?.metrics || {
+    totalSites: 0,
+    totalContent: 0,
+    publishedSites: 0,
+    contentGenerated: 0,
+    sitesCreated: 0,
+    pageViews: 0,
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">

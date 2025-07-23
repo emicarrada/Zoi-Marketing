@@ -9,6 +9,7 @@
     "dev:watch": "node ./node_modules/nodemon/bin/nodemon.js --exec \"node ./node_modules/ts-node/dist/bin.js\" src/server.ts",
     "dev:tsx": "node ./node_modules/tsx/dist/cli.mjs src/server.ts",
     "build": "tsc",
+  "postbuild": "cp zoi-marketing-firebase-adminsdk-fbsvc-ac64be31a7.json dist/",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
