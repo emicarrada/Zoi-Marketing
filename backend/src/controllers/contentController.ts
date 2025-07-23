@@ -163,6 +163,9 @@ export const saveContent = async (req: AuthRequest, res: Response) => {
   }
 };
 
+// Cache simple en memoria para respuestas de getContent
+const contentCache = new Map<string, { data: any; expires: number }>();
+
 export const getContent = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user) {
@@ -189,27 +192,51 @@ export const getContent = async (req: AuthRequest, res: Response) => {
     const pageSize = parseInt((req.query.pageSize as string) || '10', 10);
     const skip = (page - 1) * pageSize;
 
+    // Clave de cache por usuario y paginación
+    const cacheKey = `${user.id}:content:page=${page}:size=${pageSize}`;
+    const now = Date.now();
+    const cached = contentCache.get(cacheKey);
+    if (cached && cached.expires > now) {
+      return res.json({
+        success: true,
+        data: cached.data
+      });
+    }
+
+    // Selecciona solo los campos necesarios para la lista
     const [content, total] = await Promise.all([
       prisma.content.findMany({
         where: { userId: user.id },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: pageSize
+        take: pageSize,
+        select: {
+          id: true,
+          type: true,
+          title: true,
+          platform: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true
+        }
       }),
       prisma.content.count({ where: { userId: user.id } })
     ]);
 
+    const responseData = {
+      content,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize)
+      }
+    };
+    // Cachea la respuesta por 30 segundos
+    contentCache.set(cacheKey, { data: responseData, expires: now + 30000 });
     res.json({
       success: true,
-      data: {
-        content,
-        pagination: {
-          page,
-          pageSize,
-          total,
-          totalPages: Math.ceil(total / pageSize)
-        }
-      }
+      data: responseData
     });
   } catch (error) {
     console.error('Get content error:', error);
