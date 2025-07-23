@@ -184,15 +184,32 @@ export const getContent = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // Get user's content
-    const content = await prisma.content.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: 'desc' }
-    });
+    // Paginación
+    const page = parseInt((req.query.page as string) || '1', 10);
+    const pageSize = parseInt((req.query.pageSize as string) || '10', 10);
+    const skip = (page - 1) * pageSize;
+
+    const [content, total] = await Promise.all([
+      prisma.content.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: pageSize
+      }),
+      prisma.content.count({ where: { userId: user.id } })
+    ]);
 
     res.json({
       success: true,
-      data: { content }
+      data: {
+        content,
+        pagination: {
+          page,
+          pageSize,
+          total,
+          totalPages: Math.ceil(total / pageSize)
+        }
+      }
     });
   } catch (error) {
     console.error('Get content error:', error);

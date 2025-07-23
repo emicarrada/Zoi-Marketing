@@ -93,15 +93,32 @@ export const getSites = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    // Get user's sites
-    const sites = await prisma.site.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: 'desc' }
-    });
+    // Paginación
+    const page = parseInt((req.query.page as string) || '1', 10);
+    const pageSize = parseInt((req.query.pageSize as string) || '10', 10);
+    const skip = (page - 1) * pageSize;
+
+    const [sites, total] = await Promise.all([
+      prisma.site.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: pageSize
+      }),
+      prisma.site.count({ where: { userId: user.id } })
+    ]);
 
     res.json({
       success: true,
-      data: { sites }
+      data: {
+        sites,
+        pagination: {
+          page,
+          pageSize,
+          total,
+          totalPages: Math.ceil(total / pageSize)
+        }
+      }
     });
   } catch (error) {
     console.error('Get sites error:', error);
