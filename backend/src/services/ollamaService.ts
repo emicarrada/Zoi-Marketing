@@ -7,6 +7,11 @@ export interface OllamaResponse {
   done: boolean;
 }
 
+// Limites de seguridad para IA
+const MAX_PROMPT_LENGTH = 1000;
+const MAX_CONTEXT_LENGTH = 2000;
+const MAX_RESPONSE_LENGTH = 2000;
+
 export class OllamaService {
   private baseUrl: string;
   private model: string;
@@ -18,13 +23,31 @@ export class OllamaService {
 
   async generateText(prompt: string, context?: any): Promise<string> {
     try {
+      // Limitar tamaño de prompt/context
+      let safePrompt = prompt;
+      if (safePrompt.length > MAX_PROMPT_LENGTH) {
+        safePrompt = safePrompt.slice(0, MAX_PROMPT_LENGTH);
+      }
+      let safeContext = context;
+      if (safeContext && typeof safeContext === 'string' && safeContext.length > MAX_CONTEXT_LENGTH) {
+        safeContext = safeContext.slice(0, MAX_CONTEXT_LENGTH);
+      } else if (safeContext && typeof safeContext === 'object') {
+        const strContext = JSON.stringify(safeContext);
+        if (strContext.length > MAX_CONTEXT_LENGTH) {
+          safeContext = JSON.parse(strContext.slice(0, MAX_CONTEXT_LENGTH));
+        }
+      }
       const response = await axios.post(`${this.baseUrl}/api/generate`, {
         model: this.model,
-        prompt: this.buildPrompt(prompt, context),
+        prompt: this.buildPrompt(safePrompt, safeContext),
         stream: false
       });
-
-      return response.data.response;
+      // Limitar tamaño de respuesta
+      let aiResponse = response.data.response;
+      if (typeof aiResponse === 'string' && aiResponse.length > MAX_RESPONSE_LENGTH) {
+        aiResponse = aiResponse.slice(0, MAX_RESPONSE_LENGTH);
+      }
+      return aiResponse;
     } catch (error) {
       console.error('Ollama API error:', error);
       throw new Error('Failed to generate content with AI');
