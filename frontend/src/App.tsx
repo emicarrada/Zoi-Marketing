@@ -3,13 +3,14 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 
 // Pages
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import OnboardingPage from './pages/OnboardingPage';
-import DashboardPage from './pages/DashboardPage';
-import ContentPage from './pages/ContentPage';
-import SitesPage from './pages/SitesPage';
-import PricingPage from './pages/PricingPage';
+import React, { Suspense } from 'react';
+const LandingPage = React.lazy(() => import('./pages/LandingPage'));
+const LoginPage = React.lazy(() => import('./pages/LoginPage'));
+const OnboardingPage = React.lazy(() => import('./pages/OnboardingPage'));
+const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
+const ContentPage = React.lazy(() => import('./pages/ContentPage'));
+const SitesPage = React.lazy(() => import('./pages/SitesPage'));
+const PricingPage = React.lazy(() => import('./pages/PricingPage'));
 
 // Components
 import LoadingSpinner from './components/LoadingSpinner';
@@ -23,37 +24,37 @@ function AppRoutes() {
   }
 
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/" element={!user ? <LandingPage /> : <Navigate to="/dashboard" />} />
-      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" />} />
-      <Route path="/pricing" element={<PricingPage />} />
-      
-      {/* Protected routes */}
-      <Route path="/onboarding" element={
-        <ProtectedRoute>
-          <OnboardingPage />
-        </ProtectedRoute>
-      } />
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <DashboardPage />
-        </ProtectedRoute>
-      } />
-      <Route path="/content" element={
-        <ProtectedRoute>
-          <ContentPage />
-        </ProtectedRoute>
-      } />
-      <Route path="/sites" element={
-        <ProtectedRoute>
-          <SitesPage />
-        </ProtectedRoute>
-      } />
-      
-      {/* Catch all route */}
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={!user ? <LandingPage /> : <Navigate to="/dashboard" />} />
+        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        {/* Protected routes */}
+        <Route path="/onboarding" element={
+          <ProtectedRoute>
+            <OnboardingPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/content" element={
+          <ProtectedRoute>
+            <ContentPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/sites" element={
+          <ProtectedRoute>
+            <SitesPage />
+          </ProtectedRoute>
+        } />
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Suspense>
   );
 }
 
