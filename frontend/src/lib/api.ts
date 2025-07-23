@@ -44,15 +44,15 @@ export const userAPI = {
 export const contentAPI = {
   getSuggestions: (): Promise<ApiResponse<{ suggestions: string[] }>> =>
     api.get('/content/suggestions'),
-  
+
   generate: (data: { type: string; prompt: string; platform?: string }): Promise<ApiResponse<{ content: string; type: string; platform?: string }>> =>
     api.post('/content/generate', data),
-  
+
   save: (data: { type: string; title: string; body: string; platform?: string }): Promise<ApiResponse<{ content: Content }>> =>
     api.post('/content/save', data),
-  
-  getAll: (): Promise<ApiResponse<{ content: Content[] }>> =>
-    api.get('/content'),
+
+  getAll: (params?: { page?: number; pageSize?: number }): Promise<ApiResponse<{ content: Content[]; pagination?: { page: number; pageSize: number; total: number; totalPages: number } }>> =>
+    api.get('/content', { params }),
 };
 
 // Site API
